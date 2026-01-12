@@ -1,0 +1,9 @@
+stages:
+  - pre_build
+  - build
+  - target_test
+  - docs
+
+variables:
+    DOCKER_ENV_FOR_GENERATE: "v5.5:3"
+    DOCKER_ENV_FOR_DOCS: "v5.5:3-1"

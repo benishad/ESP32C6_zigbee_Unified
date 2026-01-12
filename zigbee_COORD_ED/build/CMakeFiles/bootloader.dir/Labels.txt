@@ -1,0 +1,13 @@
+# Target labels
+ bootloader
+# Source files and their labels
+D:/00.WORK/04.AM_KIT/ZIGBEE_Firmware/zigbee_COORD_ED/build/CMakeFiles/bootloader
+D:/00.WORK/04.AM_KIT/ZIGBEE_Firmware/zigbee_COORD_ED/build/CMakeFiles/bootloader.rule
+D:/00.WORK/04.AM_KIT/ZIGBEE_Firmware/zigbee_COORD_ED/build/CMakeFiles/bootloader-complete.rule
+D:/00.WORK/04.AM_KIT/ZIGBEE_Firmware/zigbee_COORD_ED/build/bootloader-prefix/src/bootloader-stamp/bootloader-build.rule
+D:/00.WORK/04.AM_KIT/ZIGBEE_Firmware/zigbee_COORD_ED/build/bootloader-prefix/src/bootloader-stamp/bootloader-configure.rule
+D:/00.WORK/04.AM_KIT/ZIGBEE_Firmware/zigbee_COORD_ED/build/bootloader-prefix/src/bootloader-stamp/bootloader-download.rule
+D:/00.WORK/04.AM_KIT/ZIGBEE_Firmware/zigbee_COORD_ED/build/bootloader-prefix/src/bootloader-stamp/bootloader-install.rule
+D:/00.WORK/04.AM_KIT/ZIGBEE_Firmware/zigbee_COORD_ED/build/bootloader-prefix/src/bootloader-stamp/bootloader-mkdir.rule
+D:/00.WORK/04.AM_KIT/ZIGBEE_Firmware/zigbee_COORD_ED/build/bootloader-prefix/src/bootloader-stamp/bootloader-patch.rule
+D:/00.WORK/04.AM_KIT/ZIGBEE_Firmware/zigbee_COORD_ED/build/bootloader-prefix/src/bootloader-stamp/bootloader-update.rule
