@@ -1,6 +1,8 @@
-# ESP32C6_zigbee_Unified
+# AMKIT_zigbee_통합_펌웨어
 
-이 프로젝트는 지그비 펌웨어를 Build & Flash 가이드를 포함함
+이 프로젝트는 AMKIT 매쉬망 구성을 위한 지그비 펌웨어를 Build & Flash 가이드를 포함함
+- ~~리눅스 Build & Flash 버전~~
+- 이전 리눅스 기반 Build & Flash 가이드를 윈도우 버전으로 업데이트
 - **단일 펌웨어**로 Coordinator / End Device 동작
 - **ROLE 변경은 NVS 저장 + 재부팅 기반**
 - 명령어는 **ASCII 문자열 + CRLF(`\r\n`)** 기준
@@ -8,8 +10,7 @@
 ---
 
 # 구성
-
-- **코디네이터, 엔드디바이스 통합ver**
+- **코디네이터, 라우터,엔드디바이스 통합ver**
 
 ESP-IDF v5.3.2 + esp-zigbee-sdk(참고) 기반이며, ESP32-C6 보드에서 테스트 완료
 
@@ -124,11 +125,15 @@ components 폴더를 위치 시키고 지그비 sdk 사용을 위해 CMakeLists.
 ZB+OK
 ZB+PING,START
 ZB+RESET
+ZB+FACTORY_RESET
 ZB+PERMIT,OPEN
 ZB+PERMIT,CLOSE
 ZB+ROLE,COORD
+ZB+ROLE,ROUTER
 ZB+ROLE,ED
 ZB+JOIN
+ZB+TX
+ZB+MESSAGE
 ```
 
 ---
@@ -209,12 +214,37 @@ ZB+RESET
 ### ◀ 응답
 
 ```text
-ZB+RESETTING
+ZB+RESETTING,OK
 ```
 
 ### 비고
 
 * NVS 데이터 유지
+* ROLE 변경과는 무관
+
+---
+
+## `ZB+FACTOPRY_RESET` — ESP32 팩토리 리셋
+
+### 설명
+
+ESP32 Zigbee 모듈을 **NVS에 포함된 데이터를 지우며, 즉시 재부팅**합니다.
+
+### ▶ 입력
+
+```text
+ZB+FACTORY_RESET
+```
+
+### ◀ 응답
+
+```text
+ZB+FACTOPRY,OK
+```
+
+### 비고
+
+* NVS 데이터 삭제
 * ROLE 변경과는 무관
 
 ---
@@ -283,6 +313,36 @@ ZB+ROLE,COORD
 ```text
 ZB
 ZB+ROLE,COORD,OK
+```
+
+### 동작 흐름
+
+1. ROLE → NVS 저장
+2. 재부팅
+3. Network Formation 자동 시작
+
+---
+
+## `ZB+ROLE,ROUTER` — 역할 설정: Router
+
+### 설명
+
+ESP32 Zigbee 역할을 **Router**로 설정합니다.
+
+* NVS 저장
+* **즉시 재부팅**
+
+### ▶ 입력
+
+```text
+ZB+ROLE,ROUTER
+```
+
+### ◀ 응답
+
+```text
+ZB
+ZB+ROLE,ROUTER,OK
 ```
 
 ### 동작 흐름
@@ -376,5 +436,9 @@ ZB+JOIN,OK
 ---
 
 # Troubleshooting
+
+> ~~신규 보드에서 펌웨어가 동작안함~~
+
+> ~~엔드디바이스 1.14 딥스위치 동작시 강제 초기화~~
 
 > ~~엔드디바이스 바인딩 테이블 오류로 코디네이터로 프레임 전송 불가~~

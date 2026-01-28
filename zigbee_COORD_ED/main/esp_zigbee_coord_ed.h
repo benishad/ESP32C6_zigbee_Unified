@@ -9,7 +9,8 @@
 typedef enum 
 {
     ZB_ROLE_COORDINATOR = 0,
-    ZB_ROLE_END_DEVICE  = 1,
+    ZB_ROLE_ROUTER,
+    ZB_ROLE_END_DEVICE,
 } zb_role_t;
 
 
@@ -21,11 +22,15 @@ typedef enum
     ZB_CMD_OK,                  // 지그비 기본 응답
     ZB_CMD_PING,                // 코디네이터 핑퐁 시작
     ZB_CMD_RESET,
+    ZB_CMD_FACTORY_RESET,       // 공장초기화
     ZB_CMD_PERMIT_OPEN,         // 코디네이터 네트워크 조인 허용 시작
     ZB_CMD_PERMIT_CLOSE,        // 코디네이터 네트워크 조인 허용 종료
     ZB_CMD_ROLE_COORD,                // 지그비 역할 설정
+    ZB_CMD_ROLE_ROUTER,               // 지그비 역할 설정
     ZB_CMD_ROLE_ED,                   // 지그비 역할 설정
     ZB_CMD_JOIN,                // 엔드 디바이스 네트워크 조인 시작
+    ZB_CMD_TX,                   // 데이터 전송
+    ZB_CMD_MESSAGE,
 } zb_cmd_id_t;
 
 
@@ -33,7 +38,11 @@ typedef enum
  *  Common Zigbee Configuration
  * ============================================================ */
 #define INSTALLCODE_POLICY_ENABLE       false
-#define ESP_ZB_PRIMARY_CHANNEL_MASK     (1l << 13)
+
+// #define ESP_ZB_PRIMARY_CHANNEL_MASK     (1l << 13)   // 이건 채널을 13으로 고정
+#define ESP_ZB_PRIMARY_CHANNEL_MASK \
+    ( (1l << 11) | (1l << 12) | (1l << 13) | (1l << 14) | (1l << 15) )  // 11~15 채널 허용
+
 #define APP_PROD_CFG_CURRENT_VERSION    0x0001
 
 /* ============================================================
@@ -44,9 +53,9 @@ typedef enum
 #define ESP_MODEL_IDENTIFIER    "\x07"CONFIG_IDF_TARGET
 
 /* ============================================================
- *  Coordinator Specific Configuration
+ *  Coordinator Specific Configuration  <<<<< 코디네이터
  * ============================================================ */
-#define ZB_COORD_MAX_CHILDREN   10
+#define ZB_COORD_MAX_CHILDREN   30  // 60      // 기획한건 50인데 여유롭게 50 + α, 어차피 매쉬로 가게되면 각각 라우터에도 붙을거니 30
 #define ZB_COORD_ENDPOINT       1
 
 #define ESP_ZB_COORDINATOR_CONFIG()                         \
@@ -59,7 +68,22 @@ typedef enum
 }
 
 /* ============================================================
- *  End Device Specific Configuration
+ *  ROUTER Specific Configuration   <<<<< 라우터
+ * ============================================================ */
+#define ZB_ROUTER_MAX_CHILDREN   20     // 보통 라우터 끼리 연결은 10~20 하는듯
+#define ZB_ROUTER_ENDPOINT       20     // 
+
+#define ESP_ZB_ROUTER_CONFIG()                              \
+{                                                           \
+    .esp_zb_role = ESP_ZB_DEVICE_TYPE_ROUTER,               \
+    .install_code_policy = INSTALLCODE_POLICY_ENABLE,       \
+    .nwk_cfg.zczr_cfg = {                                   \
+        .max_children = ZB_ROUTER_MAX_CHILDREN,             \
+    },                                                      \
+}
+
+/* ============================================================
+ *  End Device Specific Configuration  <<<<< 엔드 디바이스
  * ============================================================ */
 #define ZB_ED_ENDPOINT          10
 
@@ -124,14 +148,24 @@ static inline esp_zb_cfg_t zb_build_cfg_by_role(zb_role_t role)
 {
     esp_zb_cfg_t cfg = {0};
 
-    if (role == ZB_ROLE_COORDINATOR) 
+    switch (role)
     {
+    case ZB_ROLE_COORDINATOR:
         cfg = (esp_zb_cfg_t)ESP_ZB_COORDINATOR_CONFIG();
-    } 
-    else 
-    {
+        break;
+
+    case ZB_ROLE_ROUTER:
+        cfg = (esp_zb_cfg_t)ESP_ZB_ROUTER_CONFIG();
+        break;
+
+    case ZB_ROLE_END_DEVICE:
         cfg = (esp_zb_cfg_t)ESP_ZB_END_DEVICE_CONFIG();
+        break;
+    
+    default:
+        break;
     }
+
 
     return cfg;
 }
